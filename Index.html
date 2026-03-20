@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexCall AI — The Voice That Never Sleeps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #09080A;
+    --bg2: #0E0C10;
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --gold-dim: rgba(201,168,76,0.1);
+    --gold-glow: rgba(201,168,76,0.2);
+    --border: rgba(201,168,76,0.15);
+    --text: #EDE8DF;
+    --muted: #7A7068;
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'Jost', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 56px;
+    background: rgba(9,8,10,0.9);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--gold-light);
+  }
+  .logo span { color: var(--text); opacity: 0.5; font-weight: 400; font-size: 0.85rem; letter-spacing: 3px; display: block; font-family: var(--font-sans); }
+  .nav-btn {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--border);
+    padding: 10px 26px;
+    text-decoration: none;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .nav-btn:hover { background: var(--gold-dim); border-color: var(--gold); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 130px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-line {
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 1px; height: 120px;
+    background: linear-gradient(to bottom, transparent, var(--gold));
+    opacity: 0.4;
+  }
+  .hero-circle {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.06);
+    pointer-events: none;
+    animation: breathe 6s ease-in-out infinite;
+  }
+  .hero-circle2 {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 900px; height: 900px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.03);
+    pointer-events: none;
+    animation: breathe 8s ease-in-out infinite reverse;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    50% { transform: translate(-50%, -50%) scale(1.04); opacity: 1; }
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    display: flex; align-items: center; gap: 16px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: ''; display: block;
+    width: 40px; height: 1px; background: var(--gold); opacity: 0.4;
+  }
+
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: var(--text);
+    max-width: 860px;
+    margin-bottom: 8px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+  .hero-sub {
+    font-family: var(--font-serif);
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-style: italic;
+    color: var(--muted);
+    margin-bottom: 56px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .cta-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+  .btn-gold {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--gold);
+    color: #09080A;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 18px 48px;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .btn-gold::after {
+    content: '';
+    position: absolute; top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+  .btn-gold:hover::after { left: 100%; }
+  .btn-gold:hover { background: var(--gold-light); }
+
+  .btn-ghost-gold {
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(122,112,104,0.3);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+    font-family: var(--font-sans);
+  }
+  .btn-ghost-gold:hover { color: var(--gold); border-color: var(--gold); }
+
+  .hero-meta {
+    margin-top: 64px;
+    display: flex; align-items: center; gap: 48px;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+  .meta-item { text-align: center; }
+  .meta-num {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    display: block;
+  }
+  .meta-label { font-size: 0.7rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+  .meta-divider { width: 1px; height: 40px; background: var(--border); }
+
+  /* ── SECTIONS ── */
+  section { padding: 100px 24px; position: relative; z-index: 1; }
+  .container { max-width: 1080px; margin: 0 auto; }
+  .section-tag {
+    font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px; font-family: var(--font-sans);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-tag::after { content: ''; display: block; width: 30px; height: 1px; background: var(--gold); opacity: 0.4; }
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+  }
+  .section-title em { font-style: italic; color: var(--gold-light); }
+  .section-body { font-size: 0.95rem; color: var(--muted); max-width: 500px; line-height: 1.8; }
+
+  /* ── EXPERIENCE ── */
+  .exp-wrap {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    margin-top: 60px; border: 1px solid var(--border);
+    background: var(--border);
+  }
+  .exp-cell {
+    background: var(--bg);
+    padding: 48px 40px;
+    transition: background 0.3s;
+  }
+  .exp-cell:hover { background: var(--bg2); }
+  .exp-n {
+    font-family: var(--font-serif);
+    font-size: 3rem;
+    font-weight: 400;
+    color: var(--gold);
+    opacity: 0.2;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .exp-cell h3 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .exp-cell p { font-size: 0.88rem; color: var(--muted); line-height: 1.75; }
+
+  /* ── FEATURES ── */
+  .feat-section { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .feat-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;
+    margin-top: 60px;
+  }
+  .feat-item { border-left: 1px solid var(--border); padding-left: 28px; }
+  .feat-icon { font-size: 1.2rem; margin-bottom: 16px; color: var(--gold); }
+  .feat-item h3 {
+    font-family: var(--font-serif);
+    font-size: 1.1rem; font-weight: 600;
+    color: var(--text); margin-bottom: 10px;
+  }
+  .feat-item p { font-size: 0.83rem; color: var(--muted); line-height: 1.75; }
+  .feat-outcome {
+    margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);
+    font-size: 0.75rem; letter-spacing: 1px; color: var(--gold); font-family: var(--font-sans);
+  }
+
+  /* ── WHAT TO SAY ── */
+  .say-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 56px;
+  }
+  .say-item {
+    border: 1px solid var(--border);
+    padding: 28px 32px;
+    display: flex; gap: 18px; align-items: flex-start;
+    transition: border-color 0.3s;
+    cursor: default;
+  }
+  .say-item:hover { border-color: rgba(201,168,76,0.4); }
+  .say-q {
+    font-family: var(--font-serif);
+    font-size: 2.5rem; font-weight: 400;
+    color: var(--gold); opacity: 0.4; line-height: 1; flex-shrink: 0; margin-top: -6px;
+  }
+  .say-item p { font-size: 0.9rem; color: var(--text); font-style: italic; line-height: 1.65; font-family: var(--font-serif); }
+
+  /* ── TESTIMONIALS ── */
+  .testi-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 60px;
+  }
+  .testi-card {
+    border: 1px solid var(--border);
+    padding: 36px 32px;
+    position: relative;
+  }
+  .testi-card::before {
+    content: '"';
+    position: absolute; top: 16px; right: 24px;
+    font-family: var(--font-serif);
+    font-size: 5rem; color: var(--gold); opacity: 0.08; line-height: 1;
+  }
+  .stars { color: var(--gold); font-size: 0.75rem; letter-spacing: 3px; margin-bottom: 20px; }
+  .testi-card blockquote {
+    font-family: var(--font-serif);
+    font-size: 0.95rem; font-style: italic;
+    color: var(--text); line-height: 1.75; margin-bottom: 28px;
+  }
+  .testi-auth { display: flex; align-items: center; gap: 12px; }
+  .testi-av {
+    width: 36px; height: 36px; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-serif); font-size: 0.85rem; color: var(--gold);
+  }
+  .testi-auth strong { display: block; font-size: 0.82rem; color: var(--text); font-weight: 500; font-family: var(--font-sans); }
+  .testi-auth span { font-size: 0.72rem; color: var(--muted); font-family: var(--font-sans); }
+
+  /* ── FINAL CTA ── */
+  .final { text-align: center; background: var(--bg2); border-top: 1px solid var(--border); }
+  .final-inner { max-width: 640px; margin: 0 auto; }
+  .final h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 600; line-height: 1.1;
+    color: var(--text); margin-bottom: 20px;
+  }
+  .final h2 em { font-style: italic; color: var(--gold-light); }
+  .final p { font-size: 0.9rem; color: var(--muted); margin-bottom: 48px; line-height: 1.8; }
+  .final-btns { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 20px; }
+  .btn-outline-gold {
+    font-family: var(--font-sans);
+    font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold); border: 1px solid var(--border);
+    padding: 17px 36px; text-decoration: none;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .btn-outline-gold:hover { background: var(--gold-dim); border-color: var(--gold); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 56px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  footer p { font-size: 0.72rem; letter-spacing: 1px; color: var(--muted); font-family: var(--font-sans); }
+
+  /* ── ANIMATION ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    nav { padding: 18px 20px; }
+    .hero-meta { gap: 24px; }
+    .exp-wrap { grid-template-columns: 1fr; }
+    .feat-grid { grid-template-columns: 1fr; }
+    .say-grid { grid-template-columns: 1fr; }
+    .testi-grid { grid-template-columns: 1fr; }
+    footer { justify-content: center; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    NexCall
+    <span>AI Voice Solutions</span>
+  </div>
+  <a href="tel:+441234567890" class="nav-btn">Call the Demo</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="z-index:1">
+  <div class="hero-line"></div>
+  <div class="hero-circle"></div>
+  <div class="hero-circle2"></div>
+
+  <div class="hero-eyebrow">AI Voice Agent — Live Demo</div>
+
+  <h1>The Voice That<br><em>Never Sleeps,</em><br>Never Misses</h1>
+  <p class="hero-sub">One call reveals everything. Experience it yourself.</p>
+
+  <div class="cta-wrap">
+    <a href="tel:+441234567890" class="btn-gold">
+      ☎ &nbsp; Call the Live Demo
+    </a>
+    <a href="#demo" class="btn-ghost-gold">Or explore the demo environment first →</a>
+  </div>
+
+  <div class="hero-meta">
+    <div class="meta-item">
+      <span class="meta-num">0s</span>
+      <span class="meta-label">Wait Time</span>
+    </div>
+    <div class="meta-divider"></div>
+    <div class="meta-item">
+      <span class="meta-num">24/7</span>
+      <span class="meta-label">Always On</span>
+    </div>
+    <div class="meta-divider"></div>
+    <div class="meta-item">
+      <span class="meta-num">∞</span>
+      <span class="meta-label">Calls at Once</span>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU'LL EXPERIENCE -->
+<section>
+  <div class="container">
+    <div class="section-tag">What Happens When You Call</div>
+    <h2 class="section-title">A conversation that feels<br><em>entirely human</em></h2>
+    <p class="section-body">Every detail has been refined so your callers experience confidence, clarity, and care — from the very first word.</p>
+    <div class="exp-wrap">
+      <div class="exp-cell">
+        <div class="exp-n">I</div>
+        <h3>Instant Answer</h3>
+        <p>No hold music. No transfers. The agent picks up immediately and greets your caller by name if they've called before.</p>
+      </div>
+      <div class="exp-cell">
+        <div class="exp-n">II</div>
+        <h3>Fluid Conversation</h3>
+        <p>Ask anything. Change the subject. Interrupt. The AI follows naturally and responds with genuine understanding.</p>
+      </div>
+      <div class="exp-cell">
+        <div class="exp-n">III</div>
+        <h3>Handles Complexity</h3>
+        <p>Pricing questions, objections, edge cases — the agent handles them confidently and keeps the caller engaged.</p>
+      </div>
+      <div class="exp-cell">
+        <div class="exp-n">IV</div>
+        <h3>Closes the Loop</h3>
+        <p>The agent offers to book a follow-up, send information, or escalate to your team — whatever serves the caller best.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="feat-section">
+  <div class="container">
+    <div class="section-tag">Why NexCall</div>
+    <h2 class="section-title">Built for businesses where<br><em>every call matters</em></h2>
+    <div class="feat-grid">
+      <div class="feat-item">
+        <div class="feat-icon">⚡</div>
+        <h3>Sub-Second Response</h3>
+        <p>Trained for natural conversation speed. No pauses, no loading, no awkward silences that erode trust.</p>
+        <div class="feat-outcome">→ Callers don't know it's AI</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon">🎯</div>
+        <h3>Trained on Your Business</h3>
+        <p>Every product, service, policy, and tone — embedded into the agent before it handles a single real call.</p>
+        <div class="feat-outcome">→ Always on-brand, always accurate</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon">📅</div>
+        <h3>Live Booking Integration</h3>
+        <p>Callers can schedule appointments mid-call. The agent checks availability and confirms in real time.</p>
+        <div class="feat-outcome">→ Bookings while you sleep</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon">📊</div>
+        <h3>Full Transcripts & Summaries</h3>
+        <p>Every call is transcribed, categorised, and summarised. You see what was said without listening to a recording.</p>
+        <div class="feat-outcome">→ Insights without effort</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon">🔗</div>
+        <h3>CRM & Calendar Sync</h3>
+        <p>Leads, notes, and bookings flow directly into your existing tools. Nothing falls through the cracks.</p>
+        <div class="feat-outcome">→ Zero manual data entry</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon">🔁</div>
+        <h3>Unlimited Simultaneous Calls</h3>
+        <p>One agent. Any volume. Whether you receive 10 or 10,000 calls a day, every one is answered perfectly.</p>
+        <div class="feat-outcome">→ Scale without hiring</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT TO SAY -->
+<section>
+  <div class="container">
+    <div class="section-tag">Conversation Starters</div>
+    <h2 class="section-title">Not sure what to say?<br><em>Try these.</em></h2>
+    <p class="section-body">These are real questions your customers ask every day. Test how the AI handles each one.</p>
+    <div class="say-grid">
+      <div class="say-item"><span class="say-q">"</span><p>What are your fees, and how does the process work from start to finish?</p></div>
+      <div class="say-item"><span class="say-q">"</span><p>I'd like to book a consultation — are you available this week?</p></div>
+      <div class="say-item"><span class="say-q">"</span><p>I've spoken to other companies. Why should I choose you?</p></div>
+      <div class="say-item"><span class="say-q">"</span><p>Can you transfer me to someone in the team right now?</p></div>
+      <div class="say-item"><span class="say-q">"</span><p>I'm not ready to commit yet — can you send me more details?</p></div>
+      <div class="say-item"><span class="say-q">"</span><p>How quickly can you get started once I agree to move forward?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background: var(--bg2); border-top: 1px solid var(--border);">
+  <div class="container">
+    <div class="section-tag">Client Words</div>
+    <h2 class="section-title">What our clients say<br><em>after going live</em></h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"We haven't missed a single inbound call since launch. Our team focuses on high-value work while the AI handles the rest."</blockquote>
+        <div class="testi-auth">
+          <div class="testi-av">AM</div>
+          <div><strong>Alexandra Moore</strong><span>CEO, Meridian Legal</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"I thought AI voice would feel cold and robotic. Our clients genuinely can't tell the difference — and they've commented on how responsive we are."</blockquote>
+        <div class="testi-auth">
+          <div class="testi-av">TR</div>
+          <div><strong>Tom Radcliffe</strong><span>MD, Radcliffe Property</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Within two weeks, our booked consultations increased by 35%. The agent handles objections better than some of our junior staff used to."</blockquote>
+        <div class="testi-auth">
+          <div class="testi-av">SN</div>
+          <div><strong>Sophia Nguyen</strong><span>Director, NovaBridge Consulting</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="container">
+    <div class="final-inner">
+      <div class="section-tag" style="justify-content:center">Ready?</div>
+      <h2>Call now.<br>Book later.<br><em>Decide with confidence.</em></h2>
+      <p>One two-minute call will tell you more than any brochure. Experience the agent yourself, then schedule a strategy call with our team.</p>
+      <div class="final-btns">
+        <a href="tel:+441234567890" class="btn-gold">☎ &nbsp; Call the AI Demo</a>
+        <a href="#booking" class="btn-outline-gold">Book a Strategy Call</a>
+      </div>
+      <p style="margin-top:32px; font-size:0.72rem; letter-spacing:1px; color:var(--muted);">FREE TO TRY &nbsp;·&nbsp; NO COMMITMENT &nbsp;·&nbsp; TAKES UNDER 3 MINUTES</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 NexCall AI Solutions. All rights reserved.</p>
+  <p>hello@nexcallai.com</p>
+</footer>
+
+</body>
+</html>
